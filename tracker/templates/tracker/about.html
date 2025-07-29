@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
+<!-- Header Section -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+
+<section class="py-5" style="background: linear-gradient(135deg, #f3e8ff, #fdf4ff); font-family: 'Montserrat', sans-serif;">
+  <div class="container text-center">
+    <h1 class="fw-bold mb-3" style="color:#4e0071; font-weight: 700; font-size: 3rem; letter-spacing: 0.5px;">
+      Welcome to EngiTrack</span>
+    </h1>
+    <p class="mb-4" style="font-size: 1.1rem; color: #555; max-width: 740px; margin: auto; font-family: 'Poppins', sans-serif;">
+      A platform for engineering students to track skills, upload certificates, and showcase achievements — all in one dashboard.
+    </p>
+  </div>
+</section>
+<div class="container mt-5">
+  <h2 class="text-center fw-bold mb-4" style="color: rgb(69, 4, 125); font-family: 'Poppins', sans-serif;">
+    🔍 Key Highlights of EngiTrack
+  </h2>
+  <section class="py-5 bg-white" style="font-family: 'Poppins', sans-serif;">
+  <div class="container">
+    <div class="row text-center gy-5 gx-4">
+      <div class="col-md-4">
+        <div class="p-4 rounded-4 shadow-sm h-100 feature-card border">
+          <i class="fas fa-chart-line fa-2x mb-3" style="color:rgb(69, 3, 126);"></i>
+          <h5 class="fw-semibold">Skill Progress Tracking</h5>
+          <p class="text-muted small">Visually monitor how your skills evolve over time across domains.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 rounded-4 shadow-sm h-100 feature-card border">
+          <i class="fas fa-certificate fa-2x mb-3" style="color: #198754;"></i>
+          <h5 class="fw-semibold">Certificate Upload</h5>
+          <p class="text-muted small">Attach certifications to support your skills and stand out professionally.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 rounded-4 shadow-sm h-100 feature-card border">
+          <i class="fas fa-trophy fa-2x mb-3" style="color: #f59e0b;"></i>
+          <h5 class="fw-semibold">Achievement Highlights</h5>
+          <p class="text-muted small">Log your accomplishments from competitions, workshops, and more.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 rounded-4 shadow-sm h-100 feature-card border">
+          <i class="fas fa-search fa-2x mb-3" style="color: #0ea5e9;"></i>
+          <h5 class="fw-semibold">Smart Skill Filtering</h5>
+          <p class="text-muted small">Quickly search, filter, and categorize your skills for better focus.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 rounded-4 shadow-sm h-100 feature-card border">
+          <i class="fas fa-user-cog fa-2x mb-3" style="color: #dc3545;"></i>
+          <h5 class="fw-semibold">Personal Dashboard</h5>
+          <p class="text-muted small">Manage everything from one clean, user-focused interface.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4 rounded-4 shadow-sm h-100 feature-card border">
+          <i class="fas fa-mobile-alt fa-2x mb-3" style="color: #0d6efd;"></i>
+          <h5 class="fw-semibold">Responsive Design</h5>
+          <p class="text-muted small">Seamlessly access EngiTrack on mobile, tablet, or desktop.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 text-center" style="background:rgb(249, 248, 250); font-family: 'Poppins', sans-serif;">
+  <div class="container">
+    <a href="{% url 'register_user' %}" class="btn btn-lg px-5 py-3 text-white rounded-pill fw-semibold cta-btn">
+      Get Started 
+    </a>
+  </div>
+</section>
+
+
+
+<style>
+  .feature-card {
+    transition: all 0.3s ease;
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  .feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+  .cta-btn {
+    background: linear-gradient(to right, #7e22ce, #5b21b6);
+    border: none;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+{% endblock %}

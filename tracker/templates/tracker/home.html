@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .star-rating {
+    font-size: 1rem;
+    color: #f1c40f;
+    font-weight: bold;
+  }
+
+  .progress {
+    background-color: #e9ecef;
+    height: 8px;
+    border-radius: 5px;
+  }
+
+  .progress-bar {
+    border-radius: 5px;
+    transition: width 0.4s ease;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+
+  .skill-cell {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  }
+
+  .chart-container {
+    margin-bottom: 2rem;
+  }
+</style>
+
+<!-- Header and Add Skill Button -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold" style="color: var(--text);">💡 Your Skills</h2>
+  <a href="{% url 'add_skill' %}" class="btn" style="background-color: #D0E7FF; color: var(--text); font-weight: 600; border-radius: 8px;">
+    <i class="fa-solid fa-circle-plus me-2"></i> Add New Skill
+  </a>
+</div>
+
+<!-- Charts (Optional Analytics) -->
+{% if category_labels and category_counts %}
+<div class="chart-container">
+  <canvas id="categoryChart"></canvas>
+</div>
+{% endif %}
+{% if month_labels and month_counts %}
+<div class="chart-container">
+  <canvas id="monthChart"></canvas>
+</div>
+{% endif %}
+
+<!-- Skills Table -->
+{% if skills %}
+  <div class="table-responsive">
+    <table class="table align-middle shadow-sm" style="background-color:rgb(244, 252, 224);">
+      <thead style="background-color:rgb(242, 244, 249); color: var(--text);" class="text-center">
+        <tr>
+          <th class="text-start ps-4"></th>
+          <th class="text-center"></th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        {% for skill in skills %}
+          {% if skill.id %}
+          <tr>
+            <td class="text-start ps-4 skill-cell">
+              <div class="fw-bold fs-5" style="color: #333;">{{ skill.name }}</div>
+
+              <div class="progress my-2">
+                <div class="progress-bar"
+                  role="progressbar"
+                  style="width: {% if skill.level == 'Beginner' %}33{% elif skill.level == 'Intermediate' %}66{% else %}100{% endif %}%;
+                         background-color: {% if skill.level == 'Beginner' %}#C8A2C8{% elif skill.level == 'Intermediate' %}#B39DDB{% else %}#6A1B9A{% endif %};"
+                  aria-valuenow="{% if skill.level == 'Beginner' %}33{% elif skill.level == 'Intermediate' %}66{% else %}100{% endif %}"
+                  aria-valuemin="0" aria-valuemax="100">
+                </div>
+              </div>
+
+              <div class="star-rating mb-2">
+                {% if skill.level == 'Beginner' %} ⭐☆☆
+                {% elif skill.level == 'Intermediate' %} ⭐⭐☆
+                {% elif skill.level == 'Advanced' %} ⭐⭐⭐
+                {% endif %}
+                <span class="ms-2 badge bg-light text-dark">{{ skill.level }}</span>
+              </div>
+
+              {% if skill.goal_date %}
+              <div class="px-3 py-2 rounded" style="background-color: #f9f9fd; font-size: 14px;">
+                <div><strong>🎯 Goal:</strong> Master by {{ skill.goal_date|date:"F jS" }}</div>
+                <div><strong>📅</strong> {{ skill.days_remaining }} days remaining</div>
+                <div><strong>✅ Status:</strong> In Progress</div>
+              </div>
+              {% endif %}
+            </td>
+
+            <td>
+              <a href="{% url 'edit_skill' skill.id %}" class="btn btn-sm me-2"
+                 style="background-color: #F8D3E1; color: var(--text); font-weight: 500; border-radius: 6px;">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </a>
+              <a href="{% url 'delete_skill' skill.id %}" class="btn btn-sm"
+                 style="background-color: #D0E7FF; color: var(--text); font-weight: 500; border-radius: 6px;">
+                <i class="fa-solid fa-trash-can"></i> Delete
+              </a>
+            </td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="alert alert-info text-center" style="background-color: #FCFCF6; color: var(--text);">
+    <i class="fa-solid fa-circle-info me-2"></i> No skills added yet. Click "Add New Skill" to begin!
+  </div>
+{% endif %}
+
+<!-- Chart.js (Analytics) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const categoryCtx = document.getElementById('categoryChart');
+  const monthCtx = document.getElementById('monthChart');
+
+  {% if category_labels and category_counts %}
+  new Chart(categoryCtx, {
+    type: 'bar',
+    data: {
+      labels: {{ category_labels|safe }},
+      datasets: [{
+        label: 'Skills per Category',
+        data: {{ category_counts|safe }},
+        backgroundColor: '#9AD0EC'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+  {% endif %}
+
+  {% if month_labels and month_counts %}
+  new Chart(monthCtx, {
+    type: 'line',
+    data: {
+      labels: {{ month_labels|safe }},
+      datasets: [{
+        label: 'Skills Added per Month',
+        data: {{ month_counts|safe }},
+        fill: true,
+        borderColor: '#6A1B9A',
+        backgroundColor: 'rgba(106, 27, 154, 0.1)',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+  {% endif %}
+</script>
+
+{% endblock %}

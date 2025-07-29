@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(to bottom right, #f5f7fa,rgb(244, 252, 224));
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .profile-container {
+    background-color: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+  }
+
+  .profile-pic {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transition: 0.3s;
+  }
+
+  .upload-btn {
+    margin-top: 12px;
+    background: linear-gradient(45deg,rgb(122, 85, 186));
+    border: none;
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: 0.3s ease;
+  }
+
+  .upload-btn:hover {
+    opacity: 0.9;
+  }
+
+  input[type="file"] {
+    display: none;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: #444;
+    width: 140px;
+    display: inline-block;
+  }
+
+  .badge-skill-count {
+    font-size: 1rem;
+    background: linear-gradient(45deg,rgb(122, 85, 186));
+    padding: 0.4rem 0.9rem;
+    color: white;
+    border-radius: 20px;
+  }
+
+  .skill-card {
+    background: #f8f9ff;
+    border-radius: 1rem;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    .profile-header {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .info-section {
+      margin-top: 2rem;
+    }
+  }
+</style>
+
+<div class="container-fluid mt-5">
+  <!-- Profile Info Card -->
+  <div class="row justify-content-center">
+    <div class="col-lg-10 profile-container">
+      <div class="row align-items-center">
+        <!-- Profile Picture + Upload -->
+        <div class="col-md-4 text-center mb-4 mb-md-0">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="id_profile_pic">
+              <img src="{{ user_profile.profile_pic.url }}" alt="Profile Picture" class="profile-pic">
+            </label>
+            {{ form.profile_pic }}
+            <br>
+            <button type="submit" class="upload-btn">Change Photo</button>
+          </form>
+        </div>
+
+        <!-- User Info -->
+        <div class="col-md-8 info-section">
+          <h3 class="fw-bold text-dark mb-4">👤 Profile Information</h3>
+          <p><span class="info-label">Username:</span> {{ user_profile.user.username }}</p>
+          <p><span class="info-label">Email:</span> {{ user_profile.user.email }}</p>
+          <p><span class="info-label">Password:</span> ••••••••</p>
+          <p><span class="info-label">Total Skills:</span> <span class="badge-skill-count">{{ skills.count }}</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills Section (Full Width) -->
+  <div class="row px-4 mt-4">
+    <div class="col-12">
+      <h4 class="fw-bold mb-3"><i class="bi bi-tools me-2"></i>Skills</h4>
+      {% if skills %}
+        {% for skill in skills %}
+          <div class="skill-card">
+            <p><strong>{{ skill.name }}</strong> — {{ skill.category }} ({{ skill.level }})</p>
+            {% if skill.description %}
+              <p class="text-muted small">{{ skill.description }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted">No skills added yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

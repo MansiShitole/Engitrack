@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .full-width-form {
+    width: 100%;
+    padding: 40px 80px;
+  }
+
+  .full-width-form h3 {
+    color: #000;
+    font-weight: 700;
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+
+  .form-control:focus {
+    border-color: #8f94fb;
+    box-shadow: 0 0 0 0.2rem rgba(143, 148, 251, 0.25);
+  }
+
+  .btn-submit {
+    background: linear-gradient(45deg,rgb(122, 85, 186));
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 10px;
+    transition: 0.3s ease;
+    font-size: 16px;
+  }
+
+  .btn-submit:hover {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .full-width-form {
+      padding: 20px;
+    }
+  }
+</style>
+
+<div class="full-width-form">
+  <h3>➕ Add New Skill</h3>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-danger small">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn-submit mt-3">Save Skill</button>
+  </form>
+</div>
+{% endblock %}

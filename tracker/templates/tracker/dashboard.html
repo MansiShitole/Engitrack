@@ -1,0 +1,217 @@
+
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .dashboard-heading {
+        font-weight: 700;
+        font-size: 2rem;
+        color: #000000; /* Black text for dashboard */
+    }
+
+    .skill-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease;
+    }
+
+    .skill-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .skill-title {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .skill-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .skill-desc {
+        font-size: 0.95rem;
+        margin-top: 10px;
+    }
+
+    .empty-msg {
+        font-style: italic;
+        color: #888;
+    }
+
+    .analytics-heading {
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+        color: #000000; /* Black for Skill Analytics title */
+    }
+
+    .chart-box {
+        padding: 15px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    canvas {
+        max-height: 240px !important;
+    }
+
+    .btn-purple {
+        background-color:rgb(122, 85, 186);
+        color: white;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+
+    .btn-purple:hover {
+        background-color:rgb(91, 57, 142);
+        color: white;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-heading">📊 Dashboard</h2>
+        <a href="{% url 'add-skill' %}" class="btn btn-purple">+ Add New Skill</a>
+    </div>
+
+    {% if skills %}
+    <div class="row">
+    
+
+        {% for skill in skills %}
+<div class="col-md-6 col-lg-4 mb-4">
+    <div class="skill-card">
+        <h5 class="skill-title">{{ skill.name }}</h5>
+        <div class="skill-meta">{{ skill.category }} • Level: {{ skill.level }}</div>
+        {% if skill.description %}
+        <p class="skill-desc">{{ skill.description }}</p>
+        {% endif %}
+
+        <!-- Endorsement Section -->
+        <div class="mt-3 d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+                👍 {{ skill.endorsements.count }} endorsement{{ skill.endorsements.count|pluralize }}
+            </small>
+
+            {% if request.user != skill.user %}
+            <form action="{% url 'endorse_skill' skill.id %}" method="post" style="margin: 0;">
+    {% csrf_token %}
+    <div class="mb-2">
+        <textarea name="comment" rows="2" class="form-control form-control-sm mb-1"
+                  placeholder="Say something (optional)..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3 py-1">
+        + Endorse
+    </button>
+</form>
+{% if skill.endorsements.all %}
+<hr>
+<small class="text-muted">Recent Endorsements:</small>
+<ul class="ps-3">
+  {% for endorse in skill.endorsements.all|slice:":3" %}
+  <li><strong>{{ endorse.endorsed_by.username }}:</strong> {{ endorse.comment }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+            {% else %}
+            <span class="badge text-bg-light">Your Skill</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+        
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="analytics-heading">📈 Skill Analytics</div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="chart-box">
+                <h6 class="mb-3 text-center" style="color: #000;">🧩 Skills by Category</h6>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="chart-box">
+                <h6 class="mb-3 text-center" style="color: #000;">📅 Monthly Skills Added</h6>
+                <canvas id="monthChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const categoryLabels = {{ category_labels|safe }};
+        const categoryData = {{ category_data|safe }};
+        const monthLabels = {{ month_labels|safe }};
+        const monthCounts = {{ month_counts|safe }};
+
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryData,
+                    backgroundColor: [
+                        '#7E57C2', // EngiTrack deep purple
+                        '#5E35B1', // Dark purple
+                        '#B39DDB', // Muted
+                        '#9575CD',
+                        '#D1C4E9',
+                        '#E0BBE4'
+                    ],
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('monthChart'), {
+            type: 'bar',
+            data: {
+                labels: monthLabels,
+                datasets: [{
+                    label: 'Skills Added',
+                    data: monthCounts,
+                    backgroundColor: '#7E57C2',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+
+    {% else %}
+    <p class="empty-msg text-center">No skills added yet. Start by adding one!</p>
+    {% endif %}
+</div>
+{% endblock %}

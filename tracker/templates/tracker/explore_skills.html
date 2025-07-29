@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .btn-endorse {
+      background-color:rgb(104, 27, 171);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      padding: 6px 16px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .btn-endorse:hover {
+      background-color: #5e17b1;
+      transform: translateY(-1px);
+  }
+
+  .btn-endorse:active {
+      background-color: #4b129b;
+      transform: scale(0.97);
+  }
+</style>
+
+<div class="container mt-5">
+    <h2 class="mb-4">🔍 Explore Skills</h2>
+    <div class="row">
+        {% for skill in skills %}
+        <div class="col-md-4 mb-4">
+            <div class="skill-card">
+                <h5>{{ skill.name }}</h5>
+                <p class="text-muted small">{{ skill.category }} • {{ skill.level }}</p>
+                {% if skill.description %}<p>{{ skill.description }}</p>{% endif %}
+
+                <!-- Endorsement form -->
+                <form action="{% url 'endorse_skill' skill.id %}" method="post">
+                    {% csrf_token %}
+                    <textarea name="comment" rows="2" class="form-control mb-2"
+                              placeholder="Say something (optional)..."></textarea>
+                    <button type="submit" class="btn btn-sm btn-endorse">
+  🚀 Endorse
+</button>
+
+                </form>
+
+                <!-- Endorsement count -->
+                <small class="text-muted">
+                    👍 {{ skill.endorsements.count }} endorsement{{ skill.endorsements.count|pluralize }}
+                </small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
